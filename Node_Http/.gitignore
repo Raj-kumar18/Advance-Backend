@@ -1,0 +1,153 @@
+# Dependencies
+node_modules/
+/.pnp
+.pnp.js
+
+# Production
+/build
+/dist
+/out
+
+# Testing
+/coverage
+/.nyc_output
+
+# Misc
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+.env*.local
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+*.log
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+
+# Package manager lock files (optional, uncomment if not versioning)
+# package-lock.json
+# yarn.lock
+
+# IDE
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Cache
+.eslintcache
+.stylelintcache
+
+# Turbopack
+.next/
+.turbo/
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Webpack
+dist/
+
+# OS files
+.AppleDouble
+.LSOverride
+*.swp
+*~
+
+# React specific
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Visual Studio Code
+.vscode/
+.vscode-test
+.history
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+*.sublime-project
+
+# Webstorm
+.idea/
+
+# Node
+npm-debug.log
+yarn-error.log
+
+# Vercel
+.vercel
+
+# Netlify
+.netlify
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# System files
+.DS_Store
+.AppleDouble
+.LSOverride
+.TemporaryItems
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Placeholder
+node_modules
