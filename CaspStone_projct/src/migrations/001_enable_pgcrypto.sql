@@ -1,0 +1,1 @@
+CREATE EXTENSON IF NOT EXISTS "pgcrypto";

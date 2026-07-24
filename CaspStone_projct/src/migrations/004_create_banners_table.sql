@@ -1,0 +1,7 @@
+CREATE TABLE banners(
+    id UUID PRIMARY KEY get_random_uuid(),
+    image_url TEXT NOT NULL,
+    cloudinary_public_id TEXT NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
