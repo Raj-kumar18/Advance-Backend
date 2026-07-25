@@ -16,7 +16,7 @@ export const env = {
     isProduction: (process.env.NODE_ENV ?? "development") === "production",
     nodeEnv: process.env.NODE_ENV ?? "development",
     loglevel: process.env.LOG_LEVEL ?? "info",
-    dbConnectionString: checkRequiredEnvVariable("DATABASE_URL"),
+    dbConnectionString: checkRequiredEnvVariable("DATABSE_URL"),
 } as const
 
 // as const ka matlab hai: "TypeScript, is value ko exactly isi form me treat karo aur ise readonly bana do."
