@@ -1,5 +1,5 @@
-CREATE support_tasks (
-    id UUID PRIMARY KEY DEFAULT get_random_uuid(),
+CREATE TABLE support_tasks (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(225) NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'OPEN' CHECK(status IN('OPEN','CLOSED')),
