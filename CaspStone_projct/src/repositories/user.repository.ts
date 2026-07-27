@@ -17,10 +17,12 @@ export async function findUserByEmail(email: string): Promise<User | null> {
 //create new user by email
 
 export async function createUser(email: string, passwordHash: string): Promise<User> {
-    await pool.query(
-        "INSERT INTO users (email, password_hash) VALUES ($1, $2)",
+    const result = await pool.query<DBUserRow>(
+        "INSERT INTO users (email, password_hash) VALUES ($1, $2) RETURNING id, email, role, created_at",
         [email, passwordHash]
     )
+
+    return result.rows[0]
 
 
 }

@@ -20,3 +20,9 @@ authRouter.post("/register", async (req, res, next) => {
         next(error)
     }
 })
+
+
+// authRouter.post("/login", async (req, res, next) => {
+//     const { email, password } = req.body
+
+// })

@@ -1,6 +1,6 @@
 import { passwordLength, genSalt } from "../constants";
 import { AppError } from "../error/AppError";
-import { findUserByEmail } from "../repositories/user.repository";
+import { createUser, findUserByEmail } from "../repositories/user.repository";
 import bcrypt from "bcryptjs"
 
 export async function registerUser(email: string, password: string): Promise<void> {

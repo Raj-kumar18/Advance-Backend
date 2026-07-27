@@ -31,6 +31,7 @@ export function errorHandler(
             message: err.message,
 
         })
+        return
     }
 
     logger.error({ err }, "Unhandled error")
