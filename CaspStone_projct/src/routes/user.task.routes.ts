@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authentication } from "../middlewares/auth.middleware";
 import { AppError } from "../error/AppError";
-import { createUserTask, getUserTasks } from "../services/user.task.service";
+import { createUserTask, getUserTaskById, getUserTasks } from "../services/user.task.service";
 
 export const userTaskRoute = Router()
 
@@ -34,6 +34,22 @@ userTaskRoute.get("/", async (req, res, next) => {
             data: tasks
         })
 
+    } catch (error) {
+        next(error)
+    }
+})
+
+
+userTaskRoute.get("/:taskId", async (req, res, next) => {
+    try {
+        const { taskId } = req.params
+        const task = await getUserTaskById(taskId, req.user!.userId)
+
+        return res.status(200).json({
+            success: true,
+            message: "Task fetched successfully",
+            data: { task }
+        })
     } catch (error) {
         next(error)
     }

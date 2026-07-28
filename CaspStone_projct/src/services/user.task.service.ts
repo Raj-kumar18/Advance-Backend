@@ -1,6 +1,6 @@
 import { Task } from "../types/task"
 import { AppError } from "../error/AppError"
-import { createTask, getAllTasks } from "../repositories/user.task.repositor"
+import { createTask, findTaskByIdAndUserId, getAllTasks } from "../repositories/user.task.repositor"
 
 function validateTaskInput(title: unknown): string {
     if (typeof title !== "string") {
@@ -34,5 +34,17 @@ export async function getUserTasks(userId: string): Promise<Task[]> {
         return tasks
     } catch (error) {
         throw new AppError(400, "Failed to get user tasks")
+    }
+}
+
+export async function getUserTaskById(taskId: string, userId: string): Promise<Task> {
+    try {
+        const task = await findTaskByIdAndUserId(taskId, userId)
+        if (!task) {
+            throw new AppError(404, "Task not found")
+        }
+        return task
+    } catch (error) {
+        throw new AppError(400, "Failed to get task")
     }
 }

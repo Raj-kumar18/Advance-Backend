@@ -30,3 +30,16 @@ export async function getAllTasks(userId: string): Promise<Task[]> {
 
     return result.rows
 }
+
+
+export async function findTaskByIdAndUserId(taskId: string, userId: string): Promise<Task> {
+    const result = await pool.query<TaskRow>(
+        `SELECT id,user_id,title,status,created_at,updated_at FROM support_tasks WHERE id = $1 AND user_id = $2`,
+        [taskId, userId]
+    )
+    if (result.rows.length === 0) {
+        throw new Error("Failed to get task")
+    }
+
+    return result.rows[0]
+}
