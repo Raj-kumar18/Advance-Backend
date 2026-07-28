@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { registerUser } from "../services/auth.services";
+import { loginUser, registerUser } from "../services/auth.services";
+import { authentication } from "../middlewares/auth.middleware";
 
 export const authRouter = Router()
 
@@ -22,7 +23,39 @@ authRouter.post("/register", async (req, res, next) => {
 })
 
 
-// authRouter.post("/login", async (req, res, next) => {
-//     const { email, password } = req.body
+authRouter.post("/login", async (req, res, next) => {
 
-// })
+    try {
+        const { email, password } = req.body
+
+        const { accessToken } = await loginUser(email, password)
+
+        res.status(200).json({
+            success: true,
+            message: "Login successfully",
+            data: {
+                accessToken
+            }
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+
+//get my current user
+
+authRouter.get("/me", authentication, (req, res, next) => {
+    try {
+
+        res.status(200).json({
+            success: true,
+            message: "Current user data",
+            data: req.user
+        })
+
+    } catch (error) {
+        next(error)
+    }
+
+})
