@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authentication } from "../middlewares/auth.middleware";
 import { AppError } from "../error/AppError";
-import { createUserTask, getUserTaskById, getUserTasks } from "../services/user.task.service";
+import { createUserTask, getUserTaskById, getUserTasks, updateUserTask } from "../services/user.task.service";
 
 export const userTaskRoute = Router()
 
@@ -54,3 +54,24 @@ userTaskRoute.get("/:taskId", async (req, res, next) => {
         next(error)
     }
 })
+
+userTaskRoute.patch("/:taskId", async (req, res, next) => {
+    try {
+        const { taskId } = req.params
+        const task = await updateUserTask(taskId, req.user!.userId, req.body.title)
+
+        if (!task) {
+            throw new AppError(404, "Task not found")
+        }
+        return res.status(200).json({
+            success: true,
+            message: "Task updated successfully",
+            data: task
+        })
+    } catch (error) {
+        next(error)
+    }
+})
+
+
+

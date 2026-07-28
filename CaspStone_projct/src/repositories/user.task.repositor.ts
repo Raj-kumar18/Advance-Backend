@@ -43,3 +43,15 @@ export async function findTaskByIdAndUserId(taskId: string, userId: string): Pro
 
     return result.rows[0]
 }
+
+export async function updateTaskTitle(taskId: string, userId: string, title: string): Promise<Task | null> {
+    const result = await pool.query<TaskRow>(
+        `UPDATE support_tasks SET title = $1,updated_at = NOW() WHERE id = $2 AND user_id = $3 RETURNING id,user_id,title,status,created_at,updated_at`,
+        [title, taskId, userId]
+    )
+
+    if (result.rows.length === 0) {
+        return null
+    }
+    return result.rows[0]
+}
