@@ -1,6 +1,6 @@
 import { Task } from "../types/task"
 import { AppError } from "../error/AppError"
-import { createTask, findTaskByIdAndUserId, getAllTasks, updateTaskTitle } from "../repositories/user.task.repositor"
+import { createTask, deleteUserTaskById, findTaskByIdAndUserId, getAllTasks, updateTaskTitle } from "../repositories/user.task.repositor"
 
 function validateTaskInput(title: unknown): string {
     if (typeof title !== "string") {
@@ -60,5 +60,18 @@ export async function updateUserTask(taskId: string, userId: string, title: stri
         return task
     } catch (error) {
         throw new AppError(400, "Failed to update task")
+    }
+}
+
+export async function deleteUserTask(taskId: string, userId: string): Promise<void> {
+    try {
+        const task = await deleteUserTaskById(taskId, userId)
+
+        if (!task) {
+            throw new AppError(404, "Task not found")
+        }
+
+    } catch (error) {
+        throw new AppError(400, "Failed to delete task")
     }
 }

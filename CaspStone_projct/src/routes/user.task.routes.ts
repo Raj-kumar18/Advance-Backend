@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { authentication } from "../middlewares/auth.middleware";
 import { AppError } from "../error/AppError";
-import { createUserTask, getUserTaskById, getUserTasks, updateUserTask } from "../services/user.task.service";
+import { createUserTask, deleteUserTask, getUserTaskById, getUserTasks, updateUserTask } from "../services/user.task.service";
 
 export const userTaskRoute = Router()
 
@@ -75,3 +75,16 @@ userTaskRoute.patch("/:taskId", async (req, res, next) => {
 
 
 
+userTaskRoute.delete("/:taskId", async (req, res, next) => {
+    try {
+        const { taskId } = req.params
+        await deleteUserTask(taskId, req.user!.userId)
+
+        return res.status(200).json({
+            success: true,
+            message: "Task deleted successfully",
+        })
+    } catch (error) {
+        next(error)
+    }
+})
