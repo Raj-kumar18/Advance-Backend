@@ -9,7 +9,7 @@ export function requireAdmin(req: Request, _res: Response, next: NextFunction): 
         return
     }
 
-    if (req.user.role != "admin") {
+    if (req.user.role != "ADMIN") {
         next(new AppError(403, "Forbidden"))
         return
     }
