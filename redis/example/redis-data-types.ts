@@ -163,6 +163,23 @@ async function run() {
     console.log("rank", rank) //rank 0 matlab higherst score
 
 
+    // TTL
+    // TTL (Time To Live) Redis ka feature hai jo batata hai ki ek key kitni der tak Redis mein zinda rahegi.
+    // Jab TTL khatam ho jata hai, Redis us key ko automatically delete kar deta hai.
+
+    const otpKey = "demo:otp"
+    await redis.set(otpKey, "123456")
+    await redis.expire(otpKey, 60)
+
+    const ttl = await redis.ttl(otpKey)
+    console.log("ttl", ttl) //60 seconds
+
+    // SETEX
+    // SETEX = SET + EXPIRE - ek sath set and expire
+    // await redis.setEx(otpKey, 60, "123456")
+
+
+    await redis.quit()
 
 }
 
