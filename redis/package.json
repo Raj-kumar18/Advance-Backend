@@ -10,7 +10,9 @@
     "db:migrate": "tsx src/db/migrate.ts",
     "db:seed": "tsx src/db/seed.ts",
     "example:redis-data-types": "tsx example/redis-data-types.ts",
-    "example:redis-caching": "tsx example/redis-caching.ts"
+    "example:redis-caching": "tsx example/redis-caching.ts",
+    "example:redis-pub-sub": "tsx example/redis-pub-sub.ts",
+    "subscriber": "tsx watch src/subscribers/notification.subscriber.ts"
   },
   "keywords": [],
   "author": "",

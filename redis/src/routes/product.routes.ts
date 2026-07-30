@@ -1,8 +1,10 @@
 import { Router } from "express";
 import * as productController from "../controllers/product.controller";
+import { productRateLimit } from "../middleware/rateLimit.middleware";
+
 
 const router = Router();
-
+router.use(productRateLimit)
 router.get("/", productController.getProducts);
 router.get("/:id", productController.getProductById);
 router.post("/", productController.createProduct);
