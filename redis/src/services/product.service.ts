@@ -5,6 +5,7 @@ import {
   CreateProductInput,
   UpdateProductInput,
 } from "../types/product";
+import client from "../redis/client";
 
 function mapProductRow(row: ProductRow): Product {
   return {
@@ -19,7 +20,17 @@ function mapProductRow(row: ProductRow): Product {
   };
 }
 
-export async function getAllProducts(filters: {
+
+const PRODUCTS_ALL_CACHE_KEY = "products:all"
+const PRODUCT_CACHE_TTL_SECONDS = 60
+
+function getProductCacheKey(productId: number): string {
+  return `products:id:${productId}`
+}
+
+
+
+export async function fetchAllProductFromDatabase(filters: {
   category?: string;
   search?: string;
 }): Promise<Product[]> {
@@ -42,7 +53,51 @@ export async function getAllProducts(filters: {
   return result.rows.map(mapProductRow);
 }
 
-export async function getProductById(id: number): Promise<Product | null> {
+
+
+export async function getAllProducts(filters: {
+  category?: string;
+  search?: string;
+}): Promise<Product[]> {
+  const hashFilters = Boolean(filters?.category || filters?.search)
+
+
+  //every filter combination need a separate cachec 
+  //products:all:search:keyboard
+  //products:all:category:accessories
+
+
+  if (hashFilters) {
+    console.log("cache bypass: filters applied")
+    return fetchAllProductFromDatabase(filters)
+  }
+
+
+
+  //redis is not the source of truth here
+
+  const cachedProduct = await client.get(PRODUCTS_ALL_CACHE_KEY);
+  if (cachedProduct) {
+    console.log("Cache hit")
+    return JSON.parse(cachedProduct) as Product[]
+  }
+
+  console.log("Cache miss => fetching from db")
+
+  const products = await fetchAllProductFromDatabase(filters);
+  if (products.length > 0) {
+    await client.setEx(PRODUCTS_ALL_CACHE_KEY, PRODUCT_CACHE_TTL_SECONDS, JSON.stringify(products));
+    console.log("Cache set")
+  }
+
+  return products;
+
+
+
+}
+
+
+export async function fetchSingleProductFromDatabase(id: number): Promise<Product | null> {
   const result = await pool.query<ProductRow>(
     "SELECT * FROM products WHERE id = $1",
     [id]
@@ -55,6 +110,28 @@ export async function getProductById(id: number): Promise<Product | null> {
   return mapProductRow(result.rows[0]);
 }
 
+export async function getProductById(id: number): Promise<Product | null> {
+  const cachKey = getProductCacheKey(id)
+
+  const cachedProduct = await client.get(cachKey)
+  if (cachedProduct) {
+    console.log("cache hit", cachKey)
+    return JSON.parse(cachedProduct) as Product
+  }
+
+  console.log("cache miss => fetching from db")
+  const product = await fetchSingleProductFromDatabase(id)
+  if (product) {
+    await client.setEx(cachKey, PRODUCT_CACHE_TTL_SECONDS, JSON.stringify(product))
+    console.log("cache set")
+  }
+  return product
+
+}
+
+
+
+
 export async function createProduct(
   input: CreateProductInput
 ): Promise<Product> {
@@ -65,14 +142,27 @@ export async function createProduct(
     [input.name, input.description, input.price, input.category, input.stock]
   );
 
-  return mapProductRow(result.rows[0]);
+
+  const newlyCreatedProduct = mapProductRow(result.rows[0])
+  await deleteCreatedProductAllCache()
+
+  return newlyCreatedProduct
+
+}
+
+
+async function deleteCreatedProductAllCache(): Promise<void> {
+
+  await client.del(PRODUCTS_ALL_CACHE_KEY)
+  console.log("cache deleted")
+
 }
 
 export async function updateProduct(
   id: number,
   input: UpdateProductInput
 ): Promise<Product | null> {
-  const existing = await getProductById(id);
+  const existing = await fetchSingleProductFromDatabase(id);
   if (!existing) {
     return null;
   }
@@ -96,5 +186,15 @@ export async function updateProduct(
     [name, description, price, category, stock, id]
   );
 
-  return mapProductRow(result.rows[0]);
+
+
+  const product = mapProductRow(result.rows[0]);
+
+  await client.del(getProductCacheKey(id))
+  console.log("cache deleted", getProductCacheKey(id))
+
+  await deleteCreatedProductAllCache()
+  console.log("cache deleted", PRODUCTS_ALL_CACHE_KEY)
+
+  return product
 }
