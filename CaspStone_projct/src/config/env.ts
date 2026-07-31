@@ -18,7 +18,13 @@ export const env = {
     loglevel: process.env.LOG_LEVEL ?? "info",
     dbConnectionString: checkRequiredEnvVariable("DATABSE_URL"),
     jwtSecret: checkRequiredEnvVariable("JWT_SECRET"),
-    jwtAccessExpiresIn: checkRequiredEnvVariable("JWT_ACESS_EXPIRES_IN")
+    jwtAccessExpiresIn: checkRequiredEnvVariable("JWT_ACESS_EXPIRES_IN"),
+
+    //Cloudinary Config
+    cloudinaryCloudName: checkRequiredEnvVariable("CLOUDINARY_CLOUD_NAME"),
+    cloudinaryApiKey: checkRequiredEnvVariable("CLOUDINARY_API_KEY"),
+    cloudinaryApiSecret: checkRequiredEnvVariable("CLOUDINARY_API_SECRET"),
+    redisUrl: checkRequiredEnvVariable("REDIS_URL"),
 } as const
 
 // as const ka matlab hai: "TypeScript, is value ko exactly isi form me treat karo aur ise readonly bana do."
