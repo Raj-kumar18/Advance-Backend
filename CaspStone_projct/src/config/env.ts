@@ -25,6 +25,11 @@ export const env = {
     cloudinaryApiKey: checkRequiredEnvVariable("CLOUDINARY_API_KEY"),
     cloudinaryApiSecret: checkRequiredEnvVariable("CLOUDINARY_API_SECRET"),
     redisUrl: checkRequiredEnvVariable("REDIS_URL"),
+
+    // google oauth
+    googleClientId: checkRequiredEnvVariable("GOOGLE_CLIENT_ID"),
+    googleClientSecret: checkRequiredEnvVariable("GOOGLE_CLIEN_SECRET"),
+    googleCallbackUrl: checkRequiredEnvVariable("GOOGLE_CALLBACK_URL"),
 } as const
 
 // as const ka matlab hai: "TypeScript, is value ko exactly isi form me treat karo aur ise readonly bana do."
