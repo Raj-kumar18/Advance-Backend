@@ -49,3 +49,23 @@ export async function uploadBannerImageToCloudinary(fileBuffer: Buffer, options?
 
 
 }
+
+
+export async function deleteBannerImageFromCloudinary(publicId: string): Promise<void> {
+    const cloudName = env.cloudinaryCloudName
+    const apiKey = env.cloudinaryApiKey
+    const apiSecret = env.cloudinaryApiSecret
+
+    if (!cloudName || !apiKey || !apiSecret) {
+        throw new AppError(400, "cloudinary Configurtion Missing")
+    }
+
+    cloudinary.config({
+        cloud_name: cloudName,
+        api_key: apiKey,
+        api_secret: apiSecret,
+        secure: true // HTTPS Protocol Use hoga
+    })
+
+    return cloudinary.uploader.destroy(publicId)
+}

@@ -1,7 +1,8 @@
 import { AppError } from "../error/AppError";
 import { clearBannersCache, getBannersFromCache, setBannersToCache } from "../lib/bannerCache";
 import { uploadBannerImageToCloudinary } from "../lib/cloudinary";
-import { createAdminBannerDB, fetchAllAdminBannersDB } from "../repositories/admin.banner.repositor";
+import { addDeleteCloudinaryImageJob } from "../queues/deleteClodinaryImage.queue";
+import { createAdminBannerDB, deleteAdminBannerById, fetchAllAdminBannersDB } from "../repositories/admin.banner.repositor";
 import { Banner } from "../types/banners";
 
 
@@ -51,4 +52,22 @@ export async function fetchAdminBanners(): Promise<Banner[]> {
 
     await setBannersToCache(banners)
     return banners
+}
+
+
+export async function deleteAdminBannerService(bannerId: string): Promise<void> {
+    //delte from our db and get the public id
+
+    const publicId = await deleteAdminBannerById(bannerId)
+
+    if (!publicId) {
+        throw new AppError(404, "Banner not found")
+    }
+
+    await clearBannersCache()
+
+    //add bullmq job
+
+    await addDeleteCloudinaryImageJob(publicId)
+
 }
