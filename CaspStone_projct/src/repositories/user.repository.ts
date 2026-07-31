@@ -47,16 +47,23 @@ export async function findUserByGoogleId(googleId: string): Promise<User | null>
     return result.rows[0] ?? null
 }
 
-
-export async function linkGoogleIdToUser(userId: string, googleId: string): Promise<User> {
+export async function linkGoogleIdToUser(
+    userId: string,
+    googleId: string
+): Promise<User> {
     const result = await pool.query<DBUserRow>(
-        "UPDATE users SET google_id = $2 updated_at = NOW() WHERE id = $1 RETURNING id, email, role, created_at",
+        `
+    UPDATE users
+    SET google_id = $2,
+        updated_at = NOW()
+    WHERE id = $1
+    RETURNING id, email, role, created_at
+    `,
         [userId, googleId]
-    )
+    );
 
-    return result.rows[0]
+    return result.rows[0];
 }
-
 
 export async function createGoogleUser(email: string, googleId: string): Promise<User> {
     const result = await pool.query<DBUserRow>(

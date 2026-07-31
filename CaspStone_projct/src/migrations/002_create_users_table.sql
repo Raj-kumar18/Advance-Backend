@@ -2,7 +2,7 @@
 CREATE TABLE users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     email VARCHAR(225) NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
+    password_hash TEXT,
     google_id VARCHAR(225) UNIQUE,
     role VARCHAR(20) NOT NULL DEFAULT 'USER' CHECK(role IN('USER','ADMIN')),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
