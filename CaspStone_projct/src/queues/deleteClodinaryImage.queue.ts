@@ -25,9 +25,45 @@ export async function addDeleteCloudinaryImageJob(
             type: 'exponential',
             delay: 3000
         },
-        removeOnComplete: true,
-        removeOnFail: false
+        removeOnComplete: true, //Completed -> redis se delete
+        removeOnFail: false // Matlab -> Failed jobs Redis me rahengi. Baad me inspect kar sakte ho.
     })
 
 
 }
+
+
+//                    Express API
+//                         │
+//                         ▼
+//                 Queue.add(job)
+//                         │
+//                         ▼
+//                  BullMQ Producer
+//                         │
+//                         ▼
+//                  ioredis Client
+//                         │
+//                         ▼
+//                   Redis (6379)
+//         ┌───────────────┴───────────────┐
+//         │                               │
+//       WAIT Queue                    Job Metadata
+//         │
+//         ▼
+//                BullMQ Worker
+//                     │
+//              Fetch next job
+//                     │
+//                     ▼
+//       deleteBannerImageFromCloudinary()
+//                     │
+//          ┌──────────┴──────────┐
+//          │                     │
+//      Success               Failure
+//          │                     │
+//          ▼                     ▼
+//  Completed Event        Retry (Backoff)
+//          │                     │
+//          ▼                     ▼
+// Remove Job (optional)     Failed Queue
