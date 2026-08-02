@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Socket</title>
+</head>
+
+<body>
+    <h1>Webscoket Server demo</h1>
+    <div>
+        <input type="text" placeholder="Type your message here" id="message-input">
+        <button id="send-button">Send</button>
+        <ul id="message-container"></ul>
+
+    </div>
+
+    <script>
+
+        const messageInput = document.getElementById("message-input");
+        const sendButton = document.getElementById("send-button");
+        const messageContainer = document.getElementById("message-container");
+
+        const { port } = window.location;
+
+        const connection = new WebSocket(`ws://localhost:${port}`);
+
+        connection.onopen = () => {
+            console.log("Connected");
+        };
+
+        connection.onmessage = (ev) => {
+            const data = JSON.parse(ev.data);
+
+            const li = document.createElement("li");
+            li.textContent = data.message;
+
+            messageContainer.appendChild(li);
+        };
+
+        sendButton.addEventListener("click", () => {
+            const message = messageInput.value.trim();
+
+            if (!message) return;
+
+            connection.send(JSON.stringify({ message }));
+
+            messageInput.value = "";
+        });
+
+        messageInput.addEventListener("keydown", (e) => {
+            if (e.key === "Enter") {
+                sendButton.click();
+            }
+        });
+
+    </script>
+</body>
+
+</html>
