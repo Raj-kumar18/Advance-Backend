@@ -1,21 +1,83 @@
-import { useState } from 'react'
-
-
+import { useEffect, useRef, useState } from 'react'
+import { connectWS } from './ws'
 
 function App() {
-
+  const timer = useRef(null)
+  const socket = useRef(null)
   const [username, setUsername] = useState("")
   const [showNamePopup, setShowNamePopup] = useState(true)
   const [inputName, setInputName] = useState("")
-
+  const [typingUser, setTypingUser] = useState([])
   const [message, setMessage] = useState([])
   const [text, setText] = useState("")
+  useEffect(() => {
+    socket.current = connectWS()
+
+    socket.current.on("connect", () => {
+
+      socket.current.on("roomNotice", (username) => {
+        console.log(`${username} joined the group`)
+      })
+
+      socket.current.on("chatMessage", (msg) => {
+        // const existing = msg.find((m) => m.id === msg.id)
+        // if (existing) return
+        setMessage((prev) => [...prev, msg])
+      })
+
+      socket.current.on("typing", (username) => {
+        setTypingUser((prev) => {
+          if (prev.includes(username)) return prev
+          return [...prev, username]
+        })
+        // setTimeout(() => {
+        //   setTypingUser((prev) => prev.filter((u) => u !== username))
+        // }, 1500)
+
+      })
+
+      socket.current.on("stopTyping", (username) => {
+        setTypingUser((prev) => prev.filter((u) => u !== username))
+      })
+
+
+    })
+
+    return () => {
+      socket.current.off('roomNotice')
+      socket.current.off('chatMessage')
+      socket.current.off('typing')
+      socket.current.off('stopTyping')
+    }
+
+
+
+  }, [])
+
+
+  useEffect(() => {
+    if (text) {
+      socket.current.emit("typing", username)
+
+
+    }
+    clearTimeout(timer.current)
+    timer.current = setTimeout(() => {
+      socket.current.emit("stopTyping", username)
+    }, 1500)
+
+
+    return () => {
+      clearTimeout(timer.current)
+    }
+
+  }, [text, username])
 
   const handleNameSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const trimed = inputName.trim()
     if (!trimed) return
-
+    socket.current.emit("joinRoom", trimed)
     setUsername(trimed)
     setShowNamePopup(false)
   }
@@ -41,6 +103,10 @@ function App() {
     }
 
     setMessage((prev) => [...prev, msg])
+
+    //emmit message
+    socket.current.emit("chatMessage", msg)
+
     setText("")
   }
 
@@ -94,9 +160,11 @@ function App() {
               <div className="flex-1">
                 <h2 className="font-semibold text-lg">Realtime Group Chat</h2>
 
-                <p className="text-xs text-green-100 animate-pulse">
-                  Someone is typing...
-                </p>
+                {typingUser.length > 0 && (
+                  <p className="text-xs text-green-100 animate-pulse">
+                    {typingUser.join(", ")} is typing...
+                  </p>
+                )}
               </div>
 
               {/* User Info */}
